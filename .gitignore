@@ -1,0 +1,8 @@
+*.env
+*.pem
+*.cer
+*.crt
+*.txt
+*.pyc
+venv
+*.idea
