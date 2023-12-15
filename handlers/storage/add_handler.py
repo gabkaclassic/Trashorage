@@ -12,7 +12,7 @@ from views.phrases import (
 from views.menus import MainMenu, OptionsMenu
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext as Context
-from db.opensearch_client import storage
+from db.opensearch.storage import storage
 
 router = Router()
 

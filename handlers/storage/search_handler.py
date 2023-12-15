@@ -1,6 +1,6 @@
 from typing import List
 
-from aiogram import Router, flags
+from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from views.phrases import (
     selecting_category,
@@ -12,7 +12,7 @@ from views.phrases import (
 )
 from views.menus import MainMenu, OptionsMenu
 from aiogram.fsm.context import FSMContext as Context
-from db.opensearch_client import storage
+from db.opensearch.storage import storage
 from aiogram.fsm.state import StatesGroup, State
 from bot import bot
 

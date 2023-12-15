@@ -1,9 +1,8 @@
-from typing import List
-from asyncio import run
+from itertools import chain
+
 from opensearchpy import AsyncOpenSearch
 from settings import opensearch_creds, opensearch_verify, opensearch_url
 from uuid import uuid4
-from itertools import chain
 
 
 class OpenSearchClient:
@@ -74,26 +73,50 @@ class OpenSearchClient:
                 }
             })
 
-        return await self.connection.search(index=self.index, body=query)
+        result = await self.connection.search(index=self.index, body=query)
 
-    async def search(self, *fields, **matches):
+        result = map(
+            lambda document: document['_source'][field],
+            result['hits']['hits']
+        )
+        unpacked_result = set()
+        if nested:
+            for res in result:
+                for r in res:
+                    unpacked_result.add(r)
+        else:
+            unpacked_result = set(result)
+
+        return unpacked_result
+
+    async def search(self, one=True, *fields, **matches):
 
         if not fields and not matches:
             return []
 
         search_query = {
             'query': {
-                'match': matches
+                'bool': {
+                    'must': []
+                }
             },
             '_source': fields
         }
 
-        objects = await self.connection.search(index=self.index, body=search_query)
+        if one:
+            search_query['size'] = 1
 
-        return set(map(
+        if matches:
+            matches = [{'match': {key: value}} for key, value in matches.items()]
+            search_query['query']['bool']['must'].extend(matches)
+
+        objects = await self.connection.search(index=self.index, body=search_query)
+        objects = map(
             lambda document: document['_source'][fields[0]] if len(fields) == 1 else document['_source'],
             objects['hits']['hits']
-        ))
+        )
+
+        return list(objects)[0] if one else set(objects)
 
     async def search_substrings_insensitive(self, field, fields, substrings, **matches):
 
@@ -141,57 +164,3 @@ class OpenSearchClient:
             id=self.__generate_document_id(),
             body=document
         )
-
-
-class Usefulness(OpenSearchClient):
-
-    def __init__(self):
-        super().__init__('usefulness')
-
-    @classmethod
-    async def create(cls):
-        instance = cls()
-        # await instance.check_index()
-        return instance
-
-    async def search_by_category(self, category: str):
-        return await self.search('object', category=category)
-
-    async def search_by_tags(self, chat_id: int, tags: List[str], category: str = None):
-        filters = {'user': chat_id}
-        if category:
-            filters['category'] = category
-        objects = await self.search_substrings_insensitive('tags', ['object'], tags, **filters)
-
-        return objects
-    async def search_by_user(self, chat_id: int):
-        return await self.search('object', user=chat_id)
-
-    async def get_categories(self, chat_id: int):
-        categories = await self.unique_values('category', {'user': chat_id})
-        return set(map(lambda document: document['_source']['category'], categories['hits']['hits']))
-
-    async def get_tags(self, chat_id: int, category: str = None):
-        filters = {
-            'user': chat_id
-        }
-
-        if category:
-            filters.update({
-                'category': category
-            })
-
-        tags = await self.unique_values('tags', filters)
-
-        return set(chain(*map(lambda document: document['_source']['tags'], tags['hits']['hits'])))
-
-    async def add_object(self, chat_id: int, category: str, tags: List[str], object: str):
-        return await self.create_document({
-            'user': chat_id,
-            'category': category,
-            'tags': tags,
-            'object': object,
-        })
-
-
-storage = run(Usefulness.create())

@@ -19,3 +19,6 @@ opensearch_creds = (
     env.str('OPENSEARCH_PASSWORD')
 )
 opensearch_url = f'https://{env.str("OPENSEARCH_HOST")}:{env.int("OPENSEARCH_PORT")}'
+
+key_path = env.str('KEY_PATH')
+encrypt_key = open(key_path, 'rb').read()
