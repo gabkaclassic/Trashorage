@@ -1,5 +1,5 @@
 from typing import Callable, Dict, Any, Awaitable
-
+from logger import logger
 from aiogram.dispatcher.event.bases import CancelHandler
 from aiogram.dispatcher.middlewares.base import BaseMiddleware
 from aiogram.types import Message, CallbackQuery, TelegramObject
@@ -17,6 +17,7 @@ class RateLimitMiddleware(BaseMiddleware):
 
     async def on_pre_process_message(self, message: Message, data: dict, handler):
         if not await ratelimits.check_user(message.chat.id):
+            logger.warning(f"Ratelimits exceeded: {message.chat.id}")
             await message.answer(text=ratelimit_check_failed)
             raise CancelHandler()
 

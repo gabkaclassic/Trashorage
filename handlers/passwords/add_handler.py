@@ -10,6 +10,7 @@ from views.phrases import (
 )
 from views.menus import MainMenu
 from aiogram.fsm.state import StatesGroup, State
+from logger import logger
 
 
 class AddPasswordStates(StatesGroup):
@@ -45,7 +46,7 @@ async def add_password_value(message: Message, state: Context):
         await message.answer(text=success_saving_password)
         await message.delete()
     except Exception as e:
-        print(e)
+        logger.error(f"Error on add password: {e}", exc_info=True)
         await message.answer(text=failure_saving_password)
     finally:
         await state.clear()

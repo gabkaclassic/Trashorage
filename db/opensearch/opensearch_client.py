@@ -1,6 +1,7 @@
 from opensearchpy import AsyncOpenSearch
 from settings import opensearch_creds, opensearch_verify, opensearch_url
 from uuid import uuid4
+from logger import logger
 
 
 class OpenSearchClient:
@@ -12,25 +13,23 @@ class OpenSearchClient:
             verify_certs=opensearch_verify,
             http_auth=opensearch_creds,
         )
-        print('connection: ', self.connection)
+        logger.info("Success connect to opensearch")
         self.index = index
 
     async def index_exists(self):
         try:
             return await self.connection.indices.exists(index=self.index)
         except Exception as e:
-            print('Connection error: ', e)
+            logger.error(f"Error on connection to opensearch: {e}", exc_info=True)
             exit(0)
 
     async def check_index(self):
         if not await self.index_exists():
             try:
                 await self.connection.indices.create(index=self.index)
-                print('created')
+                logger.info("Creating index...")
             except Exception as e:
-                print(e)
-        else:
-            print('Already exists')  # TODO
+                logger.error(f"Error on opensearch index creating: {e}", exc_info=True)
 
     async def unique_values(self, field, matches=None, nested=False):
 

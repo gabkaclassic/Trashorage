@@ -49,7 +49,7 @@ class Ratelimits(RedisClient):
         last_reset = self.__parse_date(last_reset_str)
         requests = int(user_requests_info.get('requests'))
 
-        if last_reset > now:
+        if now - last_reset > Ratelimits.__timerange:
             await self.__reset_time(chat_id)
             return True
 

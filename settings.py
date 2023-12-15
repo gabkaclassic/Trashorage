@@ -22,3 +22,5 @@ opensearch_url = f'https://{env.str("OPENSEARCH_HOST")}:{env.int("OPENSEARCH_POR
 
 key_path = env.str('KEY_PATH')
 encrypt_key = open(key_path, 'rb').read()
+
+logging_path = env.str('LOG_PATH')

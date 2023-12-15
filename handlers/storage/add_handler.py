@@ -1,5 +1,5 @@
 from typing import List
-
+from logger import logger
 from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from views.phrases import (
@@ -97,4 +97,5 @@ async def adding_object(message: Message, state: Context):
         await message.answer("Om-nom-nom... Tasty!")
 
     except Exception as e:
+        logger.error(f"Error on object adding: {e}", exc_info=True)
         await message.answer(text='Hmmm... Repeat your try')

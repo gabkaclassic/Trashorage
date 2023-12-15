@@ -9,6 +9,7 @@ from handlers.passwords.search_handler import router as search_password_handler
 from handlers.passwords.add_handler import router as add_password_handler
 from handlers.storage.search_handler import router as search_handler
 from asyncio import run
+from logger import logger
 
 
 async def main():
@@ -29,4 +30,6 @@ async def main():
 
 
 if __name__ == '__main__':
+    logger.info('Start bot')
     run(main())
+    logger.info('Stop bot')
