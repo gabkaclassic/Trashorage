@@ -15,7 +15,8 @@ class RedisClient:
         self.connect = Redis(connection_pool=pool, db=database)
 
     async def get(self, key):
-        return loads(await self.connect.get(key))
+        binary_value = await self.connect.get(key)
+        return loads(binary_value) if binary_value else None
 
     async def set(self, key, value):
         return await self.connect.set(key, dumps(value))
@@ -24,14 +25,5 @@ class RedisClient:
         return await self.connect.delete(key)
 
 
-class Ratelimits(RedisClient):
 
-    def __init__(self):
-        super().__init__(databases['ratelimits'])
-
-
-class Storage(RedisClient):
-
-    def __init__(self):
-        super().__init__(databases['storage'])
 

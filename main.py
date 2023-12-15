@@ -2,6 +2,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from settings import bot_token
+from handlers.middlewares.ratelimit_middleware import RateLimitMiddleware
 from handlers.main_handler import router as main_handler
 from handlers.storage.add_handler import router as add_handler
 from handlers.passwords.search_handler import router as search_password_handler
@@ -14,6 +15,8 @@ async def main():
     bot = Bot(token=bot_token, parse_mode=ParseMode.HTML)
 
     dispatcher = Dispatcher(storage=MemoryStorage())
+
+    dispatcher.message.middleware(RateLimitMiddleware())
     dispatcher.include_routers(
         main_handler,
         search_handler,

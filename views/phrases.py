@@ -73,3 +73,8 @@ Password by this login not found 😓
 logins_not_found = """
 Logins not found! Try add password ➕
 """
+
+
+ratelimit_check_failed = """
+Too many requests, calm down! 😾😾😾
+"""

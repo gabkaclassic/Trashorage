@@ -1,5 +1,3 @@
-from itertools import chain
-
 from opensearchpy import AsyncOpenSearch
 from settings import opensearch_creds, opensearch_verify, opensearch_url
 from uuid import uuid4
