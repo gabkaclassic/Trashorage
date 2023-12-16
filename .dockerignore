@@ -1,0 +1,7 @@
+.git
+.gitignore
+.idea
+*.log
+.dockerignore
+Dockerfile
+*.yml
