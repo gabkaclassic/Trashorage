@@ -11,11 +11,10 @@ class Usefulness(OpenSearchClient):
     @classmethod
     async def create(cls):
         instance = cls()
-        # await instance.check_index()
         return instance
 
     async def search_by_category(self, category: str):
-        return await self.search(False, 'object', category=category)
+        return await self.search('object', category=category)
 
     async def search_by_tags(self, chat_id: int, tags: List[str], category: str = None):
         filters = {'user': chat_id}
@@ -26,7 +25,7 @@ class Usefulness(OpenSearchClient):
         return objects
 
     async def search_by_user(self, chat_id: int):
-        return await self.search(False, 'object', user=chat_id, one=False)
+        return await self.search('object', user=chat_id)
 
     async def get_categories(self, chat_id: int):
         categories = await self.unique_values('category', {'user': chat_id})

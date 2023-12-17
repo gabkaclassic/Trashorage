@@ -2,6 +2,7 @@ from opensearchpy import AsyncOpenSearch
 from settings import opensearch_creds, opensearch_verify, opensearch_url
 from uuid import uuid4
 from logger import logger
+from .decorators import create_index
 
 
 class OpenSearchClient:
@@ -31,6 +32,7 @@ class OpenSearchClient:
             except Exception as e:
                 logger.error(f"Error on opensearch index creating: {e}", exc_info=True)
 
+    @create_index()
     async def unique_values(self, field, matches=None, nested=False):
 
         if nested:
@@ -86,8 +88,7 @@ class OpenSearchClient:
 
         return unpacked_result
 
-    async def search(self, one=True, *fields, **matches):
-
+    def __prepare_search_query(self, *fields, **matches):
         if not fields and not matches:
             return []
 
@@ -100,21 +101,37 @@ class OpenSearchClient:
             '_source': fields
         }
 
-        if one:
-            search_query['size'] = 1
-
         if matches:
             matches = [{'match': {key: value}} for key, value in matches.items()]
             search_query['query']['bool']['must'].extend(matches)
+        return search_query
 
+    @create_index()
+    async def search_one(self, *fields, **matches):
+
+        search_query = self.__prepare_search_query(*fields, **matches)
+        search_query['size'] = 1
         objects = await self.connection.search(index=self.index, body=search_query)
         objects = map(
             lambda document: document['_source'][fields[0]] if len(fields) == 1 else document['_source'],
             objects['hits']['hits']
         )
 
-        return list(objects)[0] if one else set(objects)
+        return list(objects)[0]
 
+    @create_index()
+    async def search(self, *fields, **matches):
+
+        search_query = self.__prepare_search_query(*fields, **matches)
+        objects = await self.connection.search(index=self.index, body=search_query)
+        objects = map(
+            lambda document: document['_source'][fields[0]] if len(fields) == 1 else document['_source'],
+            objects['hits']['hits']
+        )
+
+        return set(objects)
+
+    @create_index()
     async def search_substrings_insensitive(self, field, fields, substrings, **matches):
 
         if not substrings and not matches:
@@ -154,6 +171,7 @@ class OpenSearchClient:
     def __generate_document_id(self):
         return str(uuid4())
 
+    @create_index()
     async def create_document(self, document):
 
         return await self.connection.index(
