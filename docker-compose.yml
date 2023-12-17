@@ -2,8 +2,7 @@ version: '3'
 
 services:
   app:
-    build:
-      context: .
+    image: "errodion/trashorage:latest"
     ports:
       - "80:80"
     depends_on:
@@ -12,7 +11,7 @@ services:
     env_file:
       - .env
     networks:
-      - bot_network
+      - trashorage_network
 
   opensearch:
     image: "opensearchproject/opensearch"
@@ -26,7 +25,7 @@ services:
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     networks:
-      - bot_network
+      - trashorage_network
 
   redis:
     image: "redis:latest"
@@ -35,10 +34,10 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - bot_network
+      - trashorage_network
 
 networks:
-  bot_network:
+  trashorage_network:
     driver: bridge
 
 volumes:
