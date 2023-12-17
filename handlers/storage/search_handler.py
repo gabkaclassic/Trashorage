@@ -46,10 +46,10 @@ async def get_all(message: Message, state: Context):
 
 @router.message(MainMenu.is_categories)
 async def to_categories(message: Message, state: Context):
-    await state.set_state(state=SearchStates.category)
     categories = await storage.get_categories(message.chat.id)
 
     if categories:
+        await state.set_state(state=SearchStates.category)
         await message.answer(
             text=selecting_category,
             reply_markup=OptionsMenu.generate_menu(categories)
