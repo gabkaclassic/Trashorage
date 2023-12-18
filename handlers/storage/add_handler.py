@@ -41,7 +41,8 @@ async def adding_category(message: Message, state: Context):
 async def adding_tags(callback: CallbackQuery, state: Context):
     category = callback.data
     await adding_test_answer(category, callback.message, state)
-        
+
+
 @router.message(AddingStates.category)
 async def adding_tags(message: Message, state: Context):
     category = message.text
@@ -66,6 +67,7 @@ async def adding_object(callback: CallbackQuery, state: Context):
     tags = callback.data.split()
     await adding_object_answer(callback.message, state, tags)
 
+
 @router.message(AddingStates.tags)
 async def adding_object(message: Message, state: Context):
     tags = message.text.split()
@@ -89,7 +91,7 @@ async def adding_object(message: Message, state: Context):
             chat_id=message.chat.id,
             category=data['category'],
             tags=data['tags'],
-            object=data['object'],
+            note=data['object'],
         )
         if not created:
             raise Exception("Document creation error")

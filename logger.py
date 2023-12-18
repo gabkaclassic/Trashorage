@@ -4,7 +4,7 @@ from settings import logging_path
 from os.path import join, exists
 from os import makedirs
 
-max_log_size = 1024 * 1024 * 5 # 5MB
+max_log_size = 1024 * 1024 * 5  # 5MB
 backup_count = 3
 info_path = join(logging_path, 'info.log')
 error_path = join(logging_path, 'error.log')

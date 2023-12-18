@@ -9,7 +9,13 @@ from db.redis.ratelimits import ratelimits
 
 class RateLimitMiddleware(BaseMiddleware):
 
-    async def __call__(self,  handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], message_or_callback: [Message, CallbackQuery], data: dict):
+    async def __call__(
+            self,
+            handler: Callable[[TelegramObject, Dict[str, Any]],
+            Awaitable[Any]],
+            message_or_callback: [Message, CallbackQuery],
+            data: dict
+    ):
         if isinstance(message_or_callback, Message):
             await self.on_pre_process_message(message_or_callback, data, handler)
         elif isinstance(message_or_callback, CallbackQuery):

@@ -3,20 +3,15 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - deploy_test
+      - main
 
 jobs:
   deploy:
-    runs-on: almalinux:9
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
-    - name: Set up Docker
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.x
 
     - name: Build and push Docker image
       env:
@@ -25,7 +20,7 @@ jobs:
       run: |
         echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
         docker build -t trashorage:latest .
-        docker push trashorage:latest
+        docker push errodion/trashorage:latest
     - name: SSH into server and deploy
       uses: appleboy/ssh-action@master
       with:

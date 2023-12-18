@@ -45,12 +45,12 @@ class Usefulness(OpenSearchClient):
 
         return tags
 
-    async def add_object(self, chat_id: int, category: str, tags: List[str], object: str):
+    async def add_object(self, chat_id: int, category: str, tags: List[str], note: str):
         return await self.create_document({
             'user': chat_id,
             'category': category,
             'tags': tags,
-            'object': object,
+            'object': note,
         })
 
 

@@ -88,7 +88,8 @@ class OpenSearchClient:
 
         return unpacked_result
 
-    def __prepare_search_query(self, *fields, **matches):
+    @staticmethod
+    def __prepare_search_query(*fields, **matches):
         if not fields and not matches:
             return []
 
@@ -109,7 +110,7 @@ class OpenSearchClient:
     @create_index()
     async def search_one(self, *fields, **matches):
 
-        search_query = self.__prepare_search_query(*fields, **matches)
+        search_query = OpenSearchClient.__prepare_search_query(*fields, **matches)
         search_query['size'] = 1
         objects = await self.connection.search(index=self.index, body=search_query)
         objects = map(
@@ -122,7 +123,7 @@ class OpenSearchClient:
     @create_index()
     async def search(self, *fields, **matches):
 
-        search_query = self.__prepare_search_query(*fields, **matches)
+        search_query = OpenSearchClient.__prepare_search_query(*fields, **matches)
         objects = await self.connection.search(index=self.index, body=search_query)
         objects = map(
             lambda document: document['_source'][fields[0]] if len(fields) == 1 else document['_source'],
@@ -168,7 +169,9 @@ class OpenSearchClient:
             lambda document: document['_source'][fields[0]] if len(fields) == 1 else document['_source'],
             objects['hits']['hits']
         ))
-    def __generate_document_id(self):
+
+    @staticmethod
+    def __generate_document_id():
         return str(uuid4())
 
     @create_index()
@@ -176,6 +179,6 @@ class OpenSearchClient:
 
         return await self.connection.index(
             index=self.index,
-            id=self.__generate_document_id(),
+            id=OpenSearchClient.__generate_document_id(),
             body=document
         )

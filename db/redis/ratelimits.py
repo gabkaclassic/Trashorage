@@ -18,11 +18,13 @@ class Ratelimits(RedisClient):
         #     exit(1)
         return instance
 
-    def __get_now(self, to_string=False) -> dt | str:
+    @staticmethod
+    def __get_now(to_string=False) -> dt | str:
         now = dt.now()
         return now.strftime(Ratelimits.__format) if to_string else now
 
-    def __parse_date(self, date_string: str) -> dt:
+    @staticmethod
+    def __parse_date(date_string: str) -> dt:
         return dt.strptime(date_string.strip(), Ratelimits.__format)
 
     async def __reset_time(self, chat_id: str):
@@ -31,7 +33,7 @@ class Ratelimits(RedisClient):
             chat_id,
             {
                 'requests': 1,
-                'last_reset': self.__get_now(to_string=True)
+                'last_reset': Ratelimits.__get_now(to_string=True)
             }
         )
 
@@ -39,14 +41,14 @@ class Ratelimits(RedisClient):
 
         chat_id = str(chat_id)
         user_requests_info = await self.get(chat_id)
-        now = self.__get_now()
+        now = Ratelimits.__get_now()
 
         if not user_requests_info:
             await self.__reset_time(chat_id)
             return True
 
         last_reset_str = user_requests_info.get('last_reset')
-        last_reset = self.__parse_date(last_reset_str)
+        last_reset = Ratelimits.__parse_date(last_reset_str)
         requests = int(user_requests_info.get('requests'))
 
         if now - last_reset > Ratelimits.__timerange:

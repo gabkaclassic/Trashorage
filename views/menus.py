@@ -16,11 +16,11 @@ class MainMenuOptions:
 class MainMenu:
     menu = ReplyKeyboardMarkup(keyboard=[
         [KeyboardButton(text=MainMenuOptions.categories),
-        KeyboardButton(text=MainMenuOptions.tags)],
+         KeyboardButton(text=MainMenuOptions.tags)],
         [KeyboardButton(text=MainMenuOptions.all)],
         [KeyboardButton(text=MainMenuOptions.add)],
         [KeyboardButton(text=MainMenuOptions.add_password),
-        KeyboardButton(text=MainMenuOptions.search_password)],
+         KeyboardButton(text=MainMenuOptions.search_password)],
     ])
     is_categories = lambda m: m.text == MainMenuOptions.categories
     is_tags = lambda m: m.text == MainMenuOptions.tags

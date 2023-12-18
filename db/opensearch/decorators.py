@@ -1,5 +1,7 @@
 import functools
 from opensearchpy.exceptions import NotFoundError
+
+
 def create_index():
     def decorator(func):
         @functools.wraps(func)
@@ -14,4 +16,5 @@ def create_index():
                 return await func(*args, **kwargs)
 
         return wrapper
+
     return decorator
