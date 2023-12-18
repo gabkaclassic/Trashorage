@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: almalinux:9
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
